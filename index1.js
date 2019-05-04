@@ -1,11 +1,6 @@
-
-import wasi_unstable from "./dist/polyfill.js";
+import Module from "./dist/polyfill.js";
 const ws = require("ws");
-import init from "./dist/native"
-// FIXME dirty hack for wasm_syscall
-for (var p in Module){
-  console.log("p",p);
-}
+
 const env = {
   rust_wasm_syscall: (index, data) => {
     console.log("rust_wasm_syscall", index, data);
@@ -23,16 +18,12 @@ const instantiateStreaming = WebAssembly.instantiateStreaming;
 WebAssembly.instantiateStreaming = (source, importObject) =>
   instantiateStreaming(source, {
     ...importObject,
-    env,ws
+    env,ws,...Module
   });
 const instantiate = WebAssembly.instantiate;
 WebAssembly.instantiate = (bufferSource, importObject) =>
   instantiate(bufferSource, {
     ...importObject,
-    env,ws
+    env,ws,...Module
   });
  // init("./dist/native_bg.wasm")
-
-
-
-// vim: set ts=2 sw=2 et:
